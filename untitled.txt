@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Chat App</title>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<style>
+body{font-family:Arial;margin:0;background:#f2f2f2;}
+header{background:#0a7cff;color:#fff;padding:12px;text-align:center;}
+#chat{height:70vh;overflow:auto;padding:10px;}
+.msg{background:#fff;padding:6px;margin:5px;border-radius:5px;}
+.me{background:#dcf8c6;}
+input,button{padding:10px;width:95%;margin:5px;}
+</style>
+</head>
+
+<body>
+
+<header>💬 My Chat App</header>
+
+<div id="login">
+<input id="user" placeholder="Enter username">
+<button onclick="login()">Login</button>
+</div>
+
+<div id="app" style="display:none">
+<div id="chat"></div>
+<input id="msg" placeholder="Type message">
+<button onclick="send()">Send</button>
+</div>
+
+<script>
+let username="";
+const firebaseConfig = {
+  // // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyC4b3b4SFkUb1_18bAa4YVILi8-dN9Umoo",
+  authDomain: "mychatapp-4ddb7.firebaseapp.com",
+  projectId: "mychatapp-4ddb7",
+  storageBucket: "mychatapp-4ddb7.firebasestorage.app",
+  messagingSenderId: "959441469695",
+  appId: "1:959441469695:web:f190d17a2db4dfef76ccca",
+  measurementId: "G-K711ZQNHG3"
+};
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+function login(){
+  username=document.getElementById("user").value;
+  if(username){
+    document.getElementById("login").style.display="none";
+    document.getElementById("app").style.display="block";
+    load();
+  }
+}
+
+function send(){
+  let m=document.getElementById("msg").value;
+  db.collection("messages").add({
+    user:username,
+    text:m,
+    time:Date.now()
+  });
+  document.getElementById("msg").value="";
+}
+
+function load(){
+  db.collection("messages").orderBy("time")
+  .onSnapshot(s=>{
+    let h="";
+    s.forEach(d=>{
+      let x=d.data();
+      h+=`<div class="msg ${x.user==username?'me':''}">
+           <b>${x.user}</b><br>${x.text}
+          </div>`;
+    });
+    document.getElementById("chat").innerHTML=h;
+  });
+}
+</script>
+
+</body>
+</html>
